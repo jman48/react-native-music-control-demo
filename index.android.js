@@ -26,7 +26,7 @@ export default class AwesomeProject extends Component {
     }
     componentDidMount(){
         MusicControl.enableBackgroundMode(true);
-        MusicControl.enableControl('play', true);
+        // MusicControl.enableControl('play', true);
         MusicControl.enableControl('pause', true);
 
         this.whoosh = new Sound('classical.mp3', Sound.MAIN_BUNDLE, (error) => {
@@ -38,8 +38,7 @@ export default class AwesomeProject extends Component {
         });
 
         MusicControl.on('play', this.play);
-        MusicControl.on('pause', this.pause)
-        MusicControl.on('toggle')
+        MusicControl.on('pause', this.pause);
     }
 
     play(){
@@ -63,8 +62,8 @@ export default class AwesomeProject extends Component {
             rating: 84
         });
 
-        MusicControl.enableControl('play', false);
-        MusicControl.enableControl('pause', true);
+        // MusicControl.enableControl('play', false);
+        // MusicControl.enableControl('pause', true);
 
         this.setState({
             play: true
