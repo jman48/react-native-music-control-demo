@@ -6,48 +6,121 @@
 
 import React, { Component } from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
+    AppRegistry,
+    StyleSheet,
+    Text,
+    View,
+    Button
 } from 'react-native';
 
+import MusicControl from 'react-native-music-control';
+import Sound from 'react-native-sound';
+
 export default class AwesomeProject extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-    );
-  }
+    constructor(props){
+        super(props);
+        this.state = { play: false };
+        this.displayInfo = this.displayInfo.bind(this);
+        this.play = this.play.bind(this);
+        this.pause = this.pause.bind(this);
+    }
+    componentDidMount(){
+        MusicControl.enableBackgroundMode(true);
+        MusicControl.enableControl('play', true);
+        MusicControl.enableControl('pause', true);
+
+        this.whoosh = new Sound('classical.mp3', Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log('failed to load the sound', error);
+            } else { // loaded successfully
+                console.log('Sound loaded');
+            }
+        });
+
+        MusicControl.on('play', this.play);
+        MusicControl.on('pause', this.pause)
+        MusicControl.on('toggle')
+    }
+
+    play(){
+        this.whoosh.play((success) => {
+            if (success) {
+                console.log('Playing song');
+            } else {
+                console.log('playback failed due to audio decoding errors');
+            }
+        });
+
+        MusicControl.setNowPlaying({
+            title: 'Billie Jean',
+            artwork: 'https://i.imgur.com/e1cpwdo.png',
+            artist: 'Michael Jackson',
+            album: 'Thriller',
+            genre: 'Post-disco, Rhythm and Blues, Funk, Dance-pop',
+            duration: this.whoosh.getDuration(),
+            description: 'Billie Jean is a song by American singer Michael Jackson. It is the second single from the singer\'s sixth solo album, Thriller (1982). It was written and composed by Jackson and produced by Jackson and Quincy Jones.',
+            date: '1983-01-02T00:00:00Z',
+            rating: 84
+        });
+
+        MusicControl.enableControl('play', false);
+        MusicControl.enableControl('pause', true);
+
+        this.setState({
+            play: true
+        })
+    }
+
+    pause(){
+        this.whoosh.pause();
+        console.log('Pausing song');
+        // MusicControl.enableControl('play', true);
+        // MusicControl.enableControl('pause', false);
+        this.setState({
+            play: false
+        })
+    }
+
+    displayInfo(){
+        if(!this.state.play){
+            this.play()
+        } else {
+            this.pause()
+        }
+    }
+    render() {
+        const label = this.state.play ? "PAUSE SONG" : "PLAY SONG";
+
+        return (
+            <View style={styles.container}>
+              <Button
+                  onPress={this.displayInfo}
+                  title={label}
+                  color="#841584"
+                  accessibilityLabel="Learn more about this purple button"
+              />
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5FCFF',
+    },
+    welcome: {
+        fontSize: 20,
+        textAlign: 'center',
+        margin: 10,
+    },
+    instructions: {
+        textAlign: 'center',
+        color: '#333333',
+        marginBottom: 5,
+    },
 });
 
 AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
